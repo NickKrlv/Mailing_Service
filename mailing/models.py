@@ -8,6 +8,12 @@ class Client(models.Model):
     full_name = models.CharField(max_length=100, verbose_name='Полное имя')
     comment = models.TextField(verbose_name='Комментарий', **NULLABLE)
 
+    def get_active_distributions(self):
+        return self.distribution_set.filter(status='started')
+
+    def get_completed_distributions(self):
+        return self.distribution_set.filter(status='completed')
+
     def __str__(self):
         return f'{self.full_name} ({self.email})'
 

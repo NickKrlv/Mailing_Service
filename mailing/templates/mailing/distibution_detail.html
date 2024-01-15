@@ -1,0 +1,8 @@
+{% extends 'mailing/base.html' %}
+
+{% block content %}
+  <h2>Distribution Details</h2>
+  <p>Start Time: {{ distribution.start_time }}</p>
+  <p>End Time: {{ distribution.end_time }}</p>
+  <p>Frequency: {{ distribution.frequency }}</p>
+{% endblock %}

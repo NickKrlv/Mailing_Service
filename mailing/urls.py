@@ -7,8 +7,9 @@ from mailing import views
 app_name = 'mailing'
 
 urlpatterns = [
-    path('', views.IndexView.as_view(), name='index'),
+    path('', views.index, name='index'),
     path('client_list/', views.ClientListView.as_view(), name='client_list'),
+    path('client_detail/<int:pk>/', views.ClientDetailView.as_view(), name='client_detail'),
     path('distribution_list/', views.DistributionListView.as_view(), name='distribution_list'),
     path('distribution_detail/<int:pk>/', views.DistributionDetailView.as_view(), name='distribution_detail'),
     path('distribution_create/', views.DistributionCreateView.as_view(), name='distribution_create'),

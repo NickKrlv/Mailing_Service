@@ -1,3 +1,4 @@
+from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, ListView, DetailView, DeleteView, UpdateView
 from django.forms import inlineformset_factory
@@ -6,9 +7,8 @@ from .forms import ClientForm, DistributionForm, MessageForm
 from .models import Client, Distribution, Message, DistributionLog
 
 
-class IndexView(ListView):
-    model = Distribution
-    template_name = 'index.html'
+def index(request):
+    return render(request, 'mailing/index.html')
 
 
 class ClientListView(ListView):
@@ -28,6 +28,11 @@ class ClientUpdateView(UpdateView):
     form_class = ClientForm
     template_name = 'client_form.html'
     success_url = reverse_lazy('mailing:client_list')
+
+
+class ClientDetailView(DetailView):
+    model = Client
+    template_name = 'client_detail.html'
 
 
 class DistributionDetailView(DetailView):
