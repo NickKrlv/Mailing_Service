@@ -19,12 +19,19 @@
                 <strong>My Mailing Service</strong>
             </a>
             <nav class="nav">
-                <a class="nav-link text-white" href="#">Главная</a>
+                <a class="nav-link text-white" href="{% url 'mailing:index' %}">Главная</a>
+                <a class="nav-link text-white" href="#">Блог</a>
                 <a class="nav-link text-white" href="#">Клиенты</a>
-                <a class="nav-link text-white" href="#">Рассылки</a>
                 <a class="nav-link text-white" href="#">Журнал рассылок</a>
-                <a class="nav-link text-white" href="#">Вход</a>
-                <a class="nav-link text-white" href="#">Регистрация</a>
+                {% if not request.user.is_authenticated %}
+                <a class="nav-link text-white" href="{% url 'users:login' %}">Вход</a>
+                <a class="nav-link text-white" href="{% url 'users:register' %}">Регистрация</a>
+                {% else %}
+                <form method="post" action="{% url 'users:logout' %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-link text-white nav-link">Выход</button>
+                </form>
+                {% endif %}
             </nav>
         </div>
     </div>

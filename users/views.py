@@ -12,11 +12,11 @@ from users.forms import UserSignupForm, UserProfileForm
 from users.models import User
 
 
-class SignupView(CreateView):
+class RegisterView(CreateView):
     model = User
     form_class = UserSignupForm
     success_url = reverse_lazy('users:login')
-    template_name = 'users/signup.html'
+    template_name = 'users/register.html'
 
     def form_valid(self, form):
         new_user = form.save()
