@@ -1,0 +1,27 @@
+{% extends 'mailing/base.html' %}
+{% block title %}
+    {% if form.instance.pk %}Редактирование рассылки{% else %}Создание рассылки{% endif %}
+{% endblock %}
+
+{% block content %}
+<main role="main">
+    <div class="container">
+        <h2 class="mt-4 mb-4">
+            {% if form.instance.pk %}Редактирование рассылки{% else %}Создание рассылки{% endif %}
+        </h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            {% if formset %}
+                {{ formset.management_form }}
+                {% for form in formset %}
+                    {{ form.as_p }}
+                {% endfor %}
+            {% endif %}
+
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+        </form>
+    </div>
+</main>
+{% endblock %}

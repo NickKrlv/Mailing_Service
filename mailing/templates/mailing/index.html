@@ -1,30 +1,29 @@
 {% extends 'mailing\base.html' %}
 {% block content %}
 <main role="main">
+    <div class="container mt-4">
+        <h2 class="mb-4">Рассылки</h2>
+        <div class="row mb-4">
+            {% if request.user.is_authenticated %}
+            <div class="col">
+                <a href="{% url 'mailing:create_mailing' %}" class="btn btn-primary">Добавить рассылку</a>
+            </div>
+            {% endif %}
+        </div>
+        <div class="list-group">
 
-
-    <div class="album py-5 bg-light">
-        <div class="container">
-
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="card mb-4 box-shadow">
-                        <div class="card-body">
-                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to
-                                additional content. This content is a little bit longer.</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            {% for mail in object_list %}
+            <li class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>{{ mail.id }}. {{ mail.start_time }} - {{ mail.end_time }}. Статус: {{ mail.status }}</span>
+                    {% if mail.creator == user %}
+                    <a href="{% url 'mailing:mail_update' pk=mail.pk %}" class="btn btn-sm btn-primary ml-2">Редактировать</a>
+                    {% endif %}
                 </div>
 
-            </div>
+            </li>
+            {% endfor %}
         </div>
     </div>
-
 </main>
 {% endblock %}

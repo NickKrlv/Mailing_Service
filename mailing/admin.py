@@ -1,4 +1,6 @@
 from django.contrib import admin
+
+from blog.models import BlogPost
 from .models import MailingService, Message, Logs, Client
 from users.models import User
 
@@ -35,3 +37,8 @@ class ClientAdmin(admin.ModelAdmin):
 class UserAdmin(admin.ModelAdmin):
     list_display = ('email', )
     search_fields = ('email', )
+
+
+@admin.register(BlogPost)
+class BlogPostAdmin(admin.ModelAdmin):
+    list_display = ('title', )

@@ -1,8 +1,10 @@
 import random
 import string
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 from django.views.generic import CreateView, UpdateView
 from django.contrib.sites.shortcuts import get_current_site
@@ -10,6 +12,8 @@ from django.core.mail import send_mail
 from django.urls import reverse_lazy, reverse
 from users.forms import UserSignupForm, UserProfileForm
 from users.models import User
+
+User = get_user_model()
 
 
 class RegisterView(CreateView):
@@ -74,3 +78,20 @@ class ProfileEditView(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse('users:profile')
+
+
+class UsersView(LoginRequiredMixin, View):
+    model = User
+    template_name = 'users/users_list.html'
+
+    def get(self, request):
+        users = User.objects.all()
+        return render(request, self.template_name, {'users': users})
+
+
+class UserChangeActiveUpdateView(View):
+    def post(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
+        user.is_active = not user.is_active
+        user.save()
+        return HttpResponseRedirect(reverse('users:users_list'))

@@ -1,0 +1,53 @@
+from smtplib import SMTPException
+from django.core.mail import send_mail
+from django.conf import settings
+from django.utils import timezone
+import logging
+
+from mailing.models import Message, MailingService, Logs, Client
+
+logger = logging.getLogger(__name__)
+
+
+def send_mailing(mailing):
+    now = timezone.localtime(timezone.now())
+    results = []
+
+    if mailing.start_time <= now <= mailing.end_time:
+        for message in mailing.messages.all():
+            for client in mailing.clients.all():
+                try:
+                    result = send_mail(
+                        subject=message.title,
+                        message=message.text,
+                        from_email=settings.EMAIL_HOST_USER,
+                        recipient_list=[client.email],
+                        fail_silently=False
+                    )
+
+                    log = Logs.objects.create(
+                        time=mailing.start_time,
+                        status=(result == 1),
+                        server_response='OK',
+                        mailing_list=mailing,
+                        client=client
+                    )
+                    log.save()
+                    results.append(log)
+                except SMTPException as error:
+                    log = Logs.objects.create(
+                        time=mailing.start_time,
+                        status=False,
+                        server_response=str(error),
+                        mailing_list=mailing,
+                        client=client
+                    )
+                    log.save()
+                    results.append(log)
+                    logger.error(f"Error sending email to {client.email}: {error}")
+
+    else:
+        mailing.status = MailingService.COMPLETED
+        mailing.save()
+
+    return results

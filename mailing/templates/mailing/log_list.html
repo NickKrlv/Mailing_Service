@@ -1,0 +1,28 @@
+{% extends 'mailing/base.html' %}
+{% block title %}Список логов{% endblock %}
+
+{% block content %}
+<main role="main">
+    <div class="container">
+        <h2 class="mt-4 mb-4">Список логов</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Дата последней попытки</th>
+                    <th scope="col">Статус</th>
+                    <th scope="col">Ответ сервера</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in object_list %}
+                    <tr>
+                        <td>{{ log.last_try }}</td>
+                        <td>{{ log.status }}</td>
+                        <td>{{ log.server_response }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+{% endblock %}

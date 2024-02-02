@@ -1,0 +1,24 @@
+{% extends 'mailing/base.html' %}
+{% block title %}Просмотр клиента{% endblock %}
+
+{% block content %}
+<main role="main">
+    <div class="container">
+        <h2 class="mt-4 mb-4">Просмотр клиента</h2>
+        <dl class="row">
+            <dt class="col-sm-3">Имя:</dt>
+            <dd class="col-sm-9">{{ object.name }}</dd>
+            
+            <dt class="col-sm-3">Email:</dt>
+            <dd class="col-sm-9">{{ object.email }}</dd>
+            
+            <dt class="col-sm-3">Комментарий:</dt>
+            <dd class="col-sm-9">{{ object.comment }}</dd>
+            
+            <div class="col-sm-12 mt-4">
+                <a href="{% url 'mailing:client_update' pk=object.pk %}" class="btn btn-primary">Редактировать</a>
+            </div>
+        </dl>
+    </div>
+</main>
+{% endblock %}

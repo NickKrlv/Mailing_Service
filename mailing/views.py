@@ -1,5 +1,8 @@
-from .models import MailingService, Client, Logs
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.forms import inlineformset_factory
+from django.urls import reverse_lazy, reverse
+from django.views.generic import CreateView, DetailView, UpdateView, DeleteView, ListView
+from .models import MailingService, Client, Logs, Message
+from .forms import MailingServiceForm, ClientForm, MessageForm
 
 
 class MailingServiceListView(ListView):
@@ -12,8 +15,32 @@ class MailingServiceListView(ListView):
 
 class MailCreateView(CreateView):
     model = MailingService
-    fields = '__all__'
-    success_url = '/'
+    form_class = MailingServiceForm
+    template_name = 'mailing/mail_form.html'
+    success_url = reverse_lazy('mailing:index')
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        MessageFormset = inlineformset_factory(MailingService, Message, extra=1, form=MessageForm)
+
+        if self.request.method == 'POST':
+            context_data['formset'] = MessageFormset(self.request.POST, instance=self.object)
+        else:
+            context_data['formset'] = MessageFormset(instance=self.object)
+
+        return context_data
+
+    def form_valid(self, form):
+        formset = self.get_context_data()['formset']
+        self.object = form.save()
+        if formset.is_valid():
+            formset.instance = self.object
+            formset.save()
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('mailing:mail_detail', args=[self.object.pk])
 
 
 class MailDetailView(DetailView):
@@ -23,28 +50,47 @@ class MailDetailView(DetailView):
 
 class MailUpdateView(UpdateView):
     model = MailingService
-    fields = '__all__'
-    success_url = '/'
+    form_class = MailingServiceForm
+    template_name = 'mailing/mail_form.html'
+    success_url = reverse_lazy('mailing:index')
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        MessageFormset = inlineformset_factory(MailingService, Message, extra=1, form=MessageForm)
+
+        if self.request.method == 'POST':
+            context_data['formset'] = MessageFormset(self.request.POST, instance=self.object)
+        else:
+            context_data['formset'] = MessageFormset(instance=self.object)
+
+        return context_data
+
+    def form_valid(self, form):
+        formset = self.get_context_data()['formset']
+        self.object = form.save()
+        if formset.is_valid():
+            formset.instance = self.object
+            formset.save()
+
+        return super().form_valid(form)
 
 
 class MailDeleteView(DeleteView):
     model = MailingService
-    success_url = '/'
+    template_name = 'mailing/mail_confirm_delete.html'
+    success_url = reverse_lazy('mailing:index')
 
 
 class ClientsListView(ListView):
     model = Client
-    template_name = 'mailing/clients.html'
-    context_object_name = 'clients_list'
-
-    def get_queryset(self):
-        return Client.objects.all()
+    template_name = 'mailing/client_list.html'
 
 
 class ClientCreateView(CreateView):
     model = Client
-    fields = '__all__'
-    success_url = '/'
+    form_class = ClientForm
+    template_name = 'mailing/client_form.html'
+    success_url = reverse_lazy('mailing:clients')
 
 
 class ClientDetailView(DetailView):
@@ -54,19 +100,17 @@ class ClientDetailView(DetailView):
 
 class ClientUpdateView(UpdateView):
     model = Client
-    fields = '__all__'
-    success_url = '/'
+    form_class = ClientForm
+    template_name = 'mailing/client_form.html'
+    success_url = reverse_lazy('mailing:clients')
 
 
 class ClientDeleteView(DeleteView):
     model = Client
-    success_url = '/'
+    template_name = 'mailing/client_confirm_delete.html'
+    success_url = reverse_lazy('mailing:clients')
 
 
 class LogsListView(ListView):
     model = Logs
-    template_name = 'mailing/logs.html'
-    context_object_name = 'logs_list'
-
-    def get_queryset(self):
-        return Logs.objects.all()
+    template_name = 'mailing/log_list.html'

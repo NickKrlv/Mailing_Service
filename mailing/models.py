@@ -1,12 +1,16 @@
 from django.db import models
+from django.contrib.auth import get_user_model
 
 NULLABLE = {'blank': True, 'null': True}
+
+User = get_user_model()
 
 
 class Client(models.Model):
     name = models.CharField(max_length=100, verbose_name='Имя', unique=True)
     email = models.EmailField(max_length=100, verbose_name='Email', unique=True)
     comment = models.TextField(verbose_name='Комментарий')
+    creator = models.ForeignKey(User, default=1, on_delete=models.CASCADE, related_name='clients_created')
 
     def __str__(self):
         return f'{self.name} ({self.email})'
@@ -42,6 +46,7 @@ class MailingService(models.Model):
     status = models.CharField(max_length=50, choices=status_choices, default=created, verbose_name='Статус')
     mailing_period = models.CharField(max_length=50, choices=choices, default=daily, verbose_name='Период рассылки')
     clients = models.ManyToManyField(Client, verbose_name='Клиенты')
+    creator = models.ForeignKey(User, default=1, on_delete=models.CASCADE, related_name='mailings_created')
 
     def __str__(self):
         return f'{self.start_time} - {self.end_time}. Статус: {self.status}'

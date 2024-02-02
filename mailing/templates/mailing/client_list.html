@@ -1,0 +1,23 @@
+{% extends 'mailing/base.html' %}
+{% block title %}Список клиентов{% endblock %}
+
+{% block content %}
+<main role="main">
+    <div class="container">
+        <h2 class="mt-4 mb-4">Список клиентов</h2>
+
+        <ul class="list-group">
+            {% for client in object_list %}
+                <li class="list-group-item">
+                        {{ client.name }}
+                    {% if client.creator == user %}
+                        <a href="{% url 'mailing:client_update' pk=client.pk %}" class="btn btn-sm btn-primary ml-2">Редактировать</a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+
+        <a href="{% url 'mailing:create_client' %}" class="btn btn-primary mt-3">Добавить клиента</a>
+    </div>
+</main>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'mailing/base.html' %}
+{% block title %}Просмотр рассылки{% endblock %}
+
+{% block content %}
+<main role="main">
+    <div class="container">
+        <h2 class="mt-4 mb-4">Просмотр рассылки</h2>
+        <dl class="row">
+            <dt class="col-sm-3">Начало рассылки:</dt>
+            <dd class="col-sm-9">{{ object.start_time }}</dd>
+
+            <dt class="col-sm-3">Окончание рассылки:</dt>
+            <dd class="col-sm-9">{{ object.end_time }}</dd>
+
+            <dt class="col-sm-3">Период рассылки:</dt>
+            <dd class="col-sm-9">{{ object.get_mailing_period_display }}</dd>
+
+            <dt class="col-sm-3">Статус:</dt>
+            <dd class="col-sm-9">{{ object.get_status_display }}</dd>
+
+            <div class="col-sm-12 mt-4">
+                <a href="{% url 'mailing:mail_update' pk=object.pk %}" class="btn btn-primary">Редактировать</a>
+            </div>
+        </dl>
+    </div>
+</main>
+{% endblock %}
