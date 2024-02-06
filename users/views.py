@@ -2,7 +2,8 @@ import random
 import string
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
@@ -80,8 +81,9 @@ class ProfileEditView(LoginRequiredMixin, UpdateView):
         return reverse('users:profile')
 
 
-class UsersView(LoginRequiredMixin, View):
+class UsersView(LoginRequiredMixin, PermissionRequiredMixin, View):
     model = User
+    permission_required = 'users.view_user'
     template_name = 'users/users_list.html'
 
     def get(self, request):
@@ -89,9 +91,9 @@ class UsersView(LoginRequiredMixin, View):
         return render(request, self.template_name, {'users': users})
 
 
-class UserChangeActiveUpdateView(View):
-    def post(self, request, pk):
-        user = get_object_or_404(User, pk=pk)
-        user.is_active = not user.is_active
-        user.save()
-        return HttpResponseRedirect(reverse('users:users_list'))
+@permission_required('users.set_active')
+def toggle_user_activity(request, user_id):
+    user = get_object_or_404(User, pk=user_id)
+    user.is_active = not user.is_active
+    user.save()
+    return redirect('users:users_list')

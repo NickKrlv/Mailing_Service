@@ -47,6 +47,7 @@ class MailingService(models.Model):
     mailing_period = models.CharField(max_length=50, choices=choices, default=daily, verbose_name='Период рассылки')
     clients = models.ManyToManyField(Client, verbose_name='Клиенты')
     creator = models.ForeignKey(User, default=1, on_delete=models.CASCADE, related_name='mailings_created')
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return f'{self.start_time} - {self.end_time}. Статус: {self.status}'
@@ -54,6 +55,10 @@ class MailingService(models.Model):
     class Meta:
         verbose_name = 'Рассылка'
         verbose_name_plural = 'Рассылки'
+
+        permissions = [
+            ('set_active', 'Can set mailing active'),
+        ]
 
 
 class Message(models.Model):

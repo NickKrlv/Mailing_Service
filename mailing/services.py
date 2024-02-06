@@ -4,7 +4,7 @@ from django.conf import settings
 from django.utils import timezone
 import logging
 
-from mailing.models import Message, MailingService, Logs, Client
+from mailing.models import MailingService, Logs, Client
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ def send_mailing(mailing):
     results = []
 
     if mailing.start_time <= now <= mailing.end_time:
-        for message in mailing.messages.all():
+        for message in mailing.message_set.all():
             for client in mailing.clients.all():
                 try:
                     result = send_mail(
@@ -26,20 +26,20 @@ def send_mailing(mailing):
                     )
 
                     log = Logs.objects.create(
-                        time=mailing.start_time,
+                        last_try=timezone.now(),
                         status=(result == 1),
                         server_response='OK',
-                        mailing_list=mailing,
+                        mailing=mailing,
                         client=client
                     )
                     log.save()
                     results.append(log)
                 except SMTPException as error:
                     log = Logs.objects.create(
-                        time=mailing.start_time,
+                        last_try=timezone.now(),
                         status=False,
                         server_response=str(error),
-                        mailing_list=mailing,
+                        mailing=mailing,
                         client=client
                     )
                     log.save()
@@ -47,7 +47,7 @@ def send_mailing(mailing):
                     logger.error(f"Error sending email to {client.email}: {error}")
 
     else:
-        mailing.status = MailingService.COMPLETED
+        mailing.status = MailingService.finished
         mailing.save()
 
     return results

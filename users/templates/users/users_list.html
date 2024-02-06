@@ -15,16 +15,20 @@
                     {% else %}
                     <span class="badge badge-danger">Не активен</span>
                     {% endif %}
-                    <form method="post" action="{% url 'users:user_change_active' pk=user.pk %}" class="d-inline">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-link text-dark nav-link">
-                            {% if user.is_active %}
-                            Деактивировать
-                            {% else %}
-                            Активировать
-                            {% endif %}
-                        </button>
-                    </form>
+                    {% if perms.users.set_active %}
+                    <div>
+                        <form method="post" action="{% url 'users:toggle_user_activity' user.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">
+                                {% if user.is_active %}
+                                Деактивировать
+                                {% else %}
+                                Активировать
+                                {% endif %}
+                            </button>
+                        </form>
+                    </div>
+                    {% endif %}
                 </div>
             </li>
             {% endfor %}

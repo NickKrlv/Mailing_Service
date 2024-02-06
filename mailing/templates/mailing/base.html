@@ -22,7 +22,6 @@
                 <a class="nav-link text-white" href="{% url 'users:users_list' %}">Пользователи</a>
                 <a class="nav-link text-white" href="{% url 'blog:blogpost_list' %}">Блог</a>
                 <a class="nav-link text-white" href="{% url 'mailing:clients' %}">Клиенты</a>
-                <a class="nav-link text-white" href="{% url 'mailing:index' %}">Рассылки</a>
                 <a class="nav-link text-white" href="{% url 'mailing:logs' %}">Журнал рассылок</a>
                 <span class="nav-link text-white">{{ request.user.email }}</span>
                 {% endif %}

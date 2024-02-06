@@ -1,29 +1,110 @@
 {% extends 'mailing\base.html' %}
 {% block content %}
-<main role="main">
-    <div class="container mt-4">
-        <h2 class="mb-4">Рассылки</h2>
-        <div class="row mb-4">
-            {% if request.user.is_authenticated %}
-            <div class="col">
-                <a href="{% url 'mailing:create_mailing' %}" class="btn btn-primary">Добавить рассылку</a>
-            </div>
-            {% endif %}
-        </div>
-        <div class="list-group">
-
-            {% for mail in object_list %}
-            <li class="list-group-item">
-                <div class="d-flex justify-content-between align-items-center">
-                    <span>{{ mail.id }}. {{ mail.start_time }} - {{ mail.end_time }}. Статус: {{ mail.status }}</span>
-                    {% if mail.creator == user %}
-                    <a href="{% url 'mailing:mail_update' pk=mail.pk %}" class="btn btn-sm btn-primary ml-2">Редактировать</a>
-                    {% endif %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h3>Статистика рассылок</h3>
                 </div>
-
-            </li>
-            {% endfor %}
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Количество рассылок всего</th>
+                            <th>Количество активных рассылок</th>
+                            <th>Количество уникальных клиентов</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>{{ all }}</td>
+                            <td>{{ active }}</td>
+                            <td>{{ clients_count }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h3>Случайные статьи из блога</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for post in random_posts %}
+                        <li class="list-group-item"><a href="{% url 'blog:blogpost_detail' post.slug %}">{{ post.title }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
-</main>
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h3>Рассылки</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Время рассылки</th>
+                                <th>Статус рассылки</th>
+                                <th>Периодичность рассылки</th>
+                                <th>Подробности рассылки</th>
+                                <th>Редактирование рассылки</th>
+                                <th>Удаление рассылки</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for object in object_list %}
+                            <tr>
+                                <td>{{ object.start_time }}</td>
+                                <td>{{ object.status }}</td>
+                                <td>{{ object.period }}</td>
+                                <td>
+                                    {% if request.user.is_authenticated %}
+                                    <a href="{% url 'mailing:mail_detail' object.pk %}" class="btn btn-primary btn-sm">Полная
+                                        информация</a>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if object.creator == user or user.is_superuser %}
+                                    <a href="{% url 'mailing:mail_update' object.pk %}" class="btn btn-warning btn-sm">Исправить</a>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if object.creator == user or user.is_superuser %}
+                                    <a href="{% url 'mailing:mail_delete' object.pk %}" class="btn btn-danger btn-sm">Удалить</a>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if perms.users.set_active %}
+                                    <form method="post" action="{% url 'mailing:toggle_mailing_activity' object.pk %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-secondary btn-sm">
+                                            {% if object.is_active %}
+                                            Деактивировать
+                                            {% else %}
+                                            Активировать
+                                            {% endif %}
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

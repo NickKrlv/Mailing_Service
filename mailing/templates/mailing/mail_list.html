@@ -1,0 +1,29 @@
+{% extends 'mailing\base.html' %}
+{% block content %}
+<main role="main">
+    <div class="container mt-4">
+        <h2 class="mb-4">Рассылки</h2>
+        <div class="row mb-4">
+            {% if request.user.is_authenticated %}
+            <div class="col">
+                <a href="{% url 'mailing:create_mailing' %}" class="btn btn-primary">Добавить рассылку</a>
+            </div>
+            {% endif %}
+        </div>
+        <div class="list-group">
+
+            {% for mail in object_list %}
+            <li class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>{{ mail.id }}. {{ mail.start_time }} - {{ mail.end_time }}. Статус: {{ mail.status }}</span>
+                    {% if mail.creator == user %}
+                    <a href="{% url 'mailing:mail_update' pk=mail.pk %}" class="btn btn-sm btn-primary ml-2">Редактировать</a>
+                    {% endif %}
+                </div>
+
+            </li>
+            {% endfor %}
+        </div>
+    </div>
+</main>
+{% endblock %}
