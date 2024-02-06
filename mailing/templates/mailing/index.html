@@ -84,7 +84,7 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% if perms.users.set_active %}
+                                    {% if perms.mailing.set_active or user.is_superuser %}
                                     <form method="post" action="{% url 'mailing:toggle_mailing_activity' object.pk %}">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-secondary btn-sm">

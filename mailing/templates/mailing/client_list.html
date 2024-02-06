@@ -10,7 +10,7 @@
             {% for client in object_list %}
                 <li class="list-group-item">
                         {{ client.name }}
-                    {% if client.creator == user %}
+                    {% if client.creator == user or user.is_superuser %}
                         <a href="{% url 'mailing:client_update' pk=client.pk %}" class="btn btn-sm btn-primary ml-2">Редактировать</a>
                     {% endif %}
                 </li>
