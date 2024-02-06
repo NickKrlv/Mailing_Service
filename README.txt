@@ -14,9 +14,11 @@ python manage.py migrate
 4. Создать суперпользователя:
 python manage.py csu
 
-5. Запустить сервер:
-python manage.py runserver
+5. Загрузить тестовые данные:
+python -Xutf8 manage.py loaddata all_dump.json
 
+6. Запустить сервер:
+python manage.py runserver
 
 
 Управление рассылками и блог
