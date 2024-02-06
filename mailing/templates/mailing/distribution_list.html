@@ -1,0 +1,10 @@
+{% extends 'mailing/base.html' %}
+
+{% block content %}
+  <h2>Distributions</h2>
+  <ul>
+    {% for distribution in object_list %}
+      <li><a href="{% url 'mailing:distribution_detail' distribution.pk %}">{{ distribution.start_time }} - {{ distribution.end_time }}: {{ distribution.frequency }}</a></li>
+    {% endfor %}
+  </ul>
+{% endblock %}
