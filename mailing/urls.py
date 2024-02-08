@@ -8,7 +8,7 @@ from .views import MailingServiceListView, MailCreateView, MailDetailView, MailU
 app_name = 'mailing'
 
 urlpatterns = [
-    path('', cache_page(60)(MailingServiceListView.as_view()), name='index'),
+    path('', MailingServiceListView.as_view(), name='index'),
     path('mailing/', MailingServiceListView.as_view(), name='mail_list'),
     path('create_mailing/', MailCreateView.as_view(), name='create_mailing'),
     path('mailing/<int:pk>/', MailDetailView.as_view(), name='mail_detail'),

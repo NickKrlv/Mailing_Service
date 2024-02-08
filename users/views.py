@@ -4,8 +4,9 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 from django.views import View
 from django.views.generic import CreateView, UpdateView
 from django.contrib.sites.shortcuts import get_current_site
@@ -13,6 +14,7 @@ from django.core.mail import send_mail
 from django.urls import reverse_lazy, reverse
 from users.forms import UserSignupForm, UserProfileForm
 from users.models import User
+from django.contrib import messages
 
 User = get_user_model()
 
@@ -28,20 +30,21 @@ class RegisterView(CreateView):
         token = ''.join(random.choices(string.ascii_letters + string.digits, k=50))
         new_user.email_token = token
         new_user.save()
-        current_site = get_current_site(self.request)
-        mail_subject = 'Подтвердите ваш аккаунт'
-        message = (
-            f'Поздравляем, Вы зарегистрировались на нашем портале!\n'
-            f'Для завершения регистрации и подтверждения вашей электронной почты, '
-            f'пожалуйста, кликните по следующей ссылке:\n'
-            f'http://{current_site.domain}{reverse("users:verify_email", kwargs={"uid": new_user.pk, "token": token})}'
-        )
-        send_mail(
-            subject=mail_subject,
-            message=message,
-            from_email=settings.EMAIL_HOST_USER,
-            recipient_list=[new_user.email]
-        )
+
+        verification_link = self.request.build_absolute_uri(
+            reverse('users:verify_email', kwargs={'uid': new_user.pk, 'token': token}))
+
+        subject = 'Подтверждение регистрации'
+        message = render_to_string('users/registration_email.html', {'verification_link': verification_link})
+        plain_message = strip_tags(message)
+        sender_email = settings.EMAIL_HOST_USER
+        recipient_email = new_user.email
+        send_mail(subject, plain_message, sender_email, [recipient_email], html_message=message)
+
+        # Добавление сообщения о регистрации
+        messages.success(self.request,
+                         'Регистрация прошла успешно. Пожалуйста, проверьте свою почту для завершения регистрации.')
+
         return super().form_valid(form)
 
 
