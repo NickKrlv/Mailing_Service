@@ -71,10 +71,6 @@ class MailDetailView(LoginRequiredMixin, DetailView):
     permission_required = 'mailing.view_mail'
 
 
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.core.exceptions import PermissionDenied
-
-
 class MailUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = MailingService
     form_class = MailingServiceForm
