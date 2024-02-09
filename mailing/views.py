@@ -71,6 +71,10 @@ class MailDetailView(LoginRequiredMixin, DetailView):
     permission_required = 'mailing.view_mail'
 
 
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.core.exceptions import PermissionDenied
+
+
 class MailUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = MailingService
     form_class = MailingServiceForm
@@ -98,9 +102,11 @@ class MailUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return super().form_valid(form)
 
     def test_func(self):
-        if self.request.user.has_perm('mailing.set_active'):
-            return True
-        return False
+        mailing = self.get_object()
+        return self.request.user == mailing.creator
+
+    def handle_no_permission(self):
+        raise PermissionDenied("You don't have permission to edit this mailing.")
 
 
 class MailDeleteView(LoginRequiredMixin, DeleteView):
